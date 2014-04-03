@@ -1,4 +1,4 @@
-Package: munsellinterpolation
+Package: munsellinterpol
 Type: Package
 Title: Interpolation of Munsell renotation data to convert any hue and chroma values to CIE xyY, CIE XYZ, sRGB, CIE Lab or CIE Luv.
 Version: 1.0.0
