@@ -1,5 +1,6 @@
 XYZ2xyY <- function(XYZ){
 # Purpose		Convert XYZ coordinates to xyY coordinates.
+if (is.null(dim(XYZ))) XYZ <- matrix(XYZ,1)
 w <- which(XYZ[,2] != 0.0)
 xyY <- matrix(0,dim(XYZ)[1],3)
 if (length(w)>0){
@@ -418,6 +419,7 @@ return(list(Status.ind  = 1, sRGB=sRGB, OutOfGamutFlag=OutOfGamutFlag))
 }
 
 xyY2XYZ <- function(xyY){
+if (is.null(dim(xyY))) xyY <- matrix(xyY,1)
 XYZ <- cbind(0,xyY[,3],0)
 w <- which(XYZ[,2] !=0)
 XYZ[w,1] <- xyY[w,1]*xyY[w,3]/xyY[w,2]
@@ -490,8 +492,10 @@ if (any(is.na(idx))) InsideLimits <- FALSE else InsideLimits <- TRUE
 InsideLimits
 }
 
-xyz2lab <- function(C,bbb){
+xyz2lab <- function(C,bbb=cbind(95.047,100.000,108.883)){
 # The following code made up the original ColorLab routine, before the Dec. 2013 revision
+if (is.null(dim(C))) C <- matrix(C,1)
+if (is.null(dim(bbb))) bbb <- matrix(bbb,1)
 s=dim(C)
 ss=dim(bbb)
 if (ss[1] != s[1]) bbb=matrix(1,s[1],1) * bbb[1,]
@@ -513,6 +517,60 @@ for (i in 1:s[1]){
     lab[i,]=cbind(L, a, bb)
 }
 lab
+}
+
+lab2xyz <- function(C,bbb=c(95.047,100.000,108.883)){
+# Logicol S.r.l., 2014
+# EasyRGB color search engine
+# http://www.easyrgb.com/
+#default Observer= 2deg, Illuminant= D65
+if (is.null(dim(C))) C <- matrix(C,1)
+var.Y = ( C[,1] + 16 ) / 116
+var.X = C[,2] / 500 + var.Y
+var.Z = var.Y - C[,3] / 200
+if ( var.Y^3 > 0.008856 ) var.Y = var.Y^3 else var.Y = ( var.Y - 16 / 116 ) / 7.787
+if ( var.X^3 > 0.008856 ) var.X = var.X^3 else var.X = ( var.X - 16 / 116 ) / 7.787
+if ( var.Z^3 > 0.008856 ) var.Z = var.Z^3 else var.Z = ( var.Z - 16 / 116 ) / 7.787
+X = bbb[1] * var.X     #ref.X =  95.047     Observer= 2deg, Illuminant= D65
+Y = bbb[2] * var.Y     #ref.Y = 100.000
+Z = bbb[3] * var.Z     #ref.Z = 108.883
+cbind(X,Y,Z)
+}
+
+luv2xyz <- function(C,bbb=c(95.047,100.000,108.883)){
+# Logicol S.r.l., 2014
+# EasyRGB color search engine
+# http://www.easyrgb.com/
+#default Observer= 2deg, Illuminant= D65
+if (is.null(dim(C))) C <- matrix(C,1)
+var.Y = ( C[,1] + 16 ) / 116
+if ( var.Y^3 > 0.008856 ) var.Y = var.Y^3 else var.Y = ( var.Y - 16 / 116 ) / 7.787
+ref.U = ( 4 * bbb[1] ) / ( bbb[1] + ( 15 * bbb[2] ) + ( 3 * bbb[3] ) )
+ref.V = ( 9 * bbb[2] ) / ( bbb[1] + ( 15 * bbb[2] ) + ( 3 * bbb[3] ) )
+var.U = C[,2] / ( 13 * C[1,] ) + ref.U
+var.V = C[,3] / ( 13 * C[1,] ) + ref.V
+Y = var.Y * 100
+X =  - ( 9 * Y * var.U ) / ( ( var.U - 4 ) * var.V  - var.U * var.V )
+Z = ( 9 * Y - ( 15 * var.V * Y ) - ( var.V * X ) ) / ( 3 * var.V )
+cbind(X,Y,Z)
+}
+
+xyz2luv <- function(XYZ,bbb=c(95.047,100.000,108.883)){
+# Logicol S.r.l., 2014
+# EasyRGB color search engine
+# http://www.easyrgb.com/
+#default Observer= 2deg, Illuminant= D65
+if (is.null(dim(XYZ))) XYZ <- matrix(XYZ,1)
+var.U = ( 4 * XYZ[,1] ) / ( XYZ[,1] + ( 15 * XYZ[,2] ) + ( 3 * XYZ[,3] ) )
+var.V = ( 9 * XYZ[,2] ) / ( XYZ[,1] + ( 15 * XYZ[,2] ) + ( 3 * XYZ[,3] ) )
+var.Y = XYZ[,2] / 100
+if ( var.Y > 0.008856 ) var.Y = var.Y ^ ( 1/3 ) else var.Y = ( 7.787 * var.Y ) + ( 16 / 116 )
+ref.U = ( 4 * bbb[1] ) / ( bbb[1] + ( 15 * bbb[2] ) + ( 3 * bbb[3] ) )
+ref.V = ( 9 * bbb[2] ) / ( bbb[1] + ( 15 * bbb[2] ) + ( 3 * bbb[3] ) )
+L = ( 116 * var.Y ) - 16
+u = 13 * L * ( var.U - ref.U )
+v = 13 * L * ( var.V - ref.V )
+cbind(L,u,v)
 }
 
 lab2perc <- function(lab){
