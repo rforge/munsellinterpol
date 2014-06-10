@@ -1,3 +1,94 @@
+MunsellToXYZ<-function(MunsellSpec, InterpolateByLuminanceFactor=TRUE)
+{#Convert a Munsell specification into XYZ coordinates, by interpolating over the extrapolated Munsell renotation data.
+tmpxyY<-MunsellToxyY(MunsellSpec, InterpolateByLuminanceFactor)
+x<-tmpxyY$x
+y<-tmpxyY$y
+Y<-tmpxyY$Y
+Status.ind<-tmpxyY$Status.ind
+if (Status.ind != 1) return(Status.ind=Status.ind)
+XYZ<-xyY2XYZ(cbind(x,y,Y))
+attributes(XYZ)$dimnames<-NULL
+# Set successful status return code and return
+list(X=XYZ[,1],Y=XYZ[,2],Z=XYZ[,3],Status.ind = 1)
+}
+
+MunsellToLab<-function(MunsellSpec, InterpolateByLuminanceFactor=TRUE)
+{#Convert a Munsell specification into CIE Lab coordinates, by interpolating over the extrapolated Munsell renotation data.
+tmpxyY<-MunsellToxyY(MunsellSpec, InterpolateByLuminanceFactor)
+x<-tmpxyY$x
+y<-tmpxyY$y
+Y<-tmpxyY$Y
+Status.ind<-tmpxyY$Status.ind
+if (Status.ind != 1) return(Status.ind=Status.ind)
+Lab<-xyz2lab(cbind(x,y,Y))
+# Set successful status return code and return
+list(L=Lab[,1],a=Lab[,2],b=Lab[,3],Status.ind = 1)
+}
+
+MunsellToLuv<-function(MunsellSpec, InterpolateByLuminanceFactor=TRUE)
+{#Convert a Munsell specification into CIE Luv coordinates, by interpolating over the extrapolated Munsell renotation data.
+tmpxyY<-MunsellToxyY(MunsellSpec, InterpolateByLuminanceFactor)
+x<-tmpxyY$x
+y<-tmpxyY$y
+Y<-tmpxyY$Y
+Status.ind<-tmpxyY$Status.ind
+if (Status.ind != 1) return(Status.ind=Status.ind)
+Luv<-xyz2luv(cbind(x,y,Y))
+# Set successful status return code and return
+list(L=Luv[,1],u=Luv[,2],v=Luv[,3],Status.ind = 1)
+}
+
+XYZtoMunsell <- function(XYZ)
+{
+xyY<-XYZ2xyY(XYZ)
+tmpMunsell<-xyYtoMunsell(xyY)
+Status.ind<-tmpMunsell$Status.ind
+if (Status.ind != 1){
+# If the routine did not exit from the while loop, then the maximum number of
+# iterations has been tried.  Set an error message and return.
+Status.dist <- tmpMunsell$Status.dist
+Status.num <- tmpMunsell$Status.num
+return(list(Status.ind  = Status.ind, Status.dist = Status.dist, Status.num  = Status.num))
+}
+MunsellVec <- tmpMunsell$MunsellVec
+MunsellSpec <- tmpMunsell$MunsellSpec
+return(list(MunsellVec  = MunsellVec,MunsellSpec = MunsellSpec,Status.ind  = 1))
+}
+
+labtoMunsell <- function(Lab)
+{
+xyz<-lab2xyz(Lab)
+tmpMunsell<-XYZtoMunsell(xyz)
+Status.ind<-tmpMunsell$Status.ind
+if (Status.ind != 1){
+# If the routine did not exit from the while loop, then the maximum number of
+# iterations has been tried.  Set an error message and return.
+Status.dist <- tmpMunsell$Status.dist
+Status.num <- tmpMunsell$Status.num
+return(list(Status.ind  = Status.ind, Status.dist = Status.dist, Status.num  = Status.num))
+}
+MunsellVec <- tmpMunsell$MunsellVec
+MunsellSpec <- tmpMunsell$MunsellSpec
+return(list(MunsellVec  = MunsellVec,MunsellSpec = MunsellSpec,Status.ind  = 1))
+}
+
+luvtoMunsell <- function(Luv)
+{
+xyz<-luv2xyz(Luv)[1,]
+tmpMunsell<-XYZtoMunsell(xyz)
+Status.ind<-tmpMunsell$Status.ind
+if (Status.ind != 1){
+# If the routine did not exit from the while loop, then the maximum number of
+# iterations has been tried.  Set an error message and return.
+Status.dist <- tmpMunsell$Status.dist
+Status.num <- tmpMunsell$Status.num
+return(list(Status.ind  = Status.ind, Status.dist = Status.dist, Status.num  = Status.num))
+}
+MunsellVec <- tmpMunsell$MunsellVec
+MunsellSpec <- tmpMunsell$MunsellSpec
+return(list(MunsellVec  = MunsellVec,MunsellSpec = MunsellSpec,Status.ind  = 1))
+}
+
 XYZ2xyY <- function(XYZ){
 # Purpose		Convert XYZ coordinates to xyY coordinates.
 if (is.null(dim(XYZ))) XYZ <- matrix(XYZ,1)
@@ -60,8 +151,8 @@ ReflectedXYZ <- XYZ
 # for illuminant C, whose Y value is 100.  This is the reference
 # illuminant which is reflected off the Munsell sample.
 # The chromaticity coordinates for Illuminant C are
-   xC <- 0.31006 # whitepointsilluminants[which(whitepointsilluminants[,'illuminant']=='C'), 'x2' ]
-   yC <- 0.31616 # whitepointsilluminants[which(whitepointsilluminants[,'illuminant']=='C'), 'y2' ]
+   xC <- 0.310062 # whitepointsilluminants[which(whitepointsilluminants[,'illuminant']=='C'), 'x2' ]
+   yC <- 0.316148 # whitepointsilluminants[which(whitepointsilluminants[,'illuminant']=='C'), 'y2' ]
 # The line above replaces the following line (replaced Jan. 1, 2014, by Paul Centore)
 # [xC yC] = IlluminantCWhitePoint();
 # Convert to XYZ form, and normalize to have luminance 100.  This will
@@ -957,8 +1048,8 @@ if (is.character(MunsellSpec)) ColorLabMunsellVector <- MunsellSpecToColorLabFor
 HueNumber <- Value <- Chroma <- HueLetterCode <- 0
 if (length(ColorLabMunsellVector) == 1){ # Colour is Munsell grey
 # A one-element vector is an achromatic grey, so no interpolation is necessary.  Evaluate directly and return.
-   x <- 0.31006 #whitepointsilluminants[which(whitepointsilluminants[,'illuminant']=='C'), 'x2' ]
-   y <- 0.31616 #whitepointsilluminants[which(whitepointsilluminants[,'illuminant']=='C'), 'y2' ]
+   x <- 0.310062 #whitepointsilluminants[which(whitepointsilluminants[,'illuminant']=='C'), 'x2' ]
+   y <- 0.316148 #whitepointsilluminants[which(whitepointsilluminants[,'illuminant']=='C'), 'y2' ]
    return(list(x=x, y=y, Status.ind = 1))
 } else {
    HueNumber     <- ColorLabMunsellVector[1]
@@ -1114,8 +1205,8 @@ MunsellToxyForIntegerMunsellValue<-function(ColorLabMunsellVector){
 MunsellSpecString <- ColorLabFormatToMunsellSpec(ColorLabMunsellVector)$MunsellSpecString
 if (length(ColorLabMunsellVector) == 1){
    if (ColorLabMunsellVector[1] == 10){ #Ideal white; set value directly and return
-   x <- 0.31006 #whitepointsilluminants[which(whitepointsilluminants[,'illuminant']=='C'), 'x2' ]
-   y <- 0.31616 #whitepointsilluminants[which(whitepointsilluminants[,'illuminant']=='C'), 'y2' ]
+   x <- 0.310062 #whitepointsilluminants[which(whitepointsilluminants[,'illuminant']=='C'), 'x2' ]
+   y <- 0.316148 #whitepointsilluminants[which(whitepointsilluminants[,'illuminant']=='C'), 'y2' ]
    return(list(x=x,y=y,Status.ind = TRUE))
    }
    tmp <- MunsellToxyYfromExtrapolatedRenotation(ColorLabMunsellVector)
@@ -1153,8 +1244,8 @@ if (MunsellChroma == 0){ # Munsell grey, for which no interpolation is needed
 }
 if (MunsellChromaMinus == 0) { # Colour within smallest even chroma ovoid
 # Smallest chroma ovoid collapses to white point
-   xMinus <- 0.31006 # whitepointsilluminants[which(whitepointsilluminants[,'illuminant']=='C'), 'x2' ]
-   yMinus <- 0.31616 #whitepointsilluminants[which(whitepointsilluminants[,'illuminant']=='C'), 'y2' ]
+   xMinus <- 0.310062 # whitepointsilluminants[which(whitepointsilluminants[,'illuminant']=='C'), 'x2' ]
+   yMinus <- 0.316148 #whitepointsilluminants[which(whitepointsilluminants[,'illuminant']=='C'), 'y2' ]
 } else {
    tmp <- FindHueOnRenotationOvoid(c(MunsellHueNumber,IntegerMunsellValue,MunsellChromaMinus,CLHueLetterIndex))
    xMinus <- tmp$x
