@@ -3,9 +3,8 @@ Type: Package
 Title: Interpolation of Munsell renotation data to convert any hue and chroma values to CIE xyY, CIE XYZ, sRGB, CIE Lab or CIE Luv.
 Version: 1.0.1
 Encoding: UTF-8
-Authors@R: c(person(given = "Jose", family = "Gama", role = c("aut","cre","trl"),email = "jgama@abo.fi"),
-       person(given = "Paul", family = "Centore", role = c("aut","cph"),email = "jgama@abo.fi"),
-       person(given = "Göran", family = "Högnäs", role = "ths"))
+Authors@R: c(person(given = "Jose", family = "Gama", role = c("aut","cre","trl"),email = "rxprtgama@gmail.com"),
+       person(given = "Paul", family = "Centore", role = c("aut","cph"),email = "centore@99main.com"))
 Description: Methods for interpolating data in the Munsell color system following the ASTM D-1535 standard. Hues and chromas with decimal values can be interpolated and converted to/from the Munsell color system and CIE xyY, CIE XYZ, sRGB, CIE Lab or CIE Luv. Chromas can be odd and hue steps can be real numbers. Based on the work by Paul Centore, "The Munsell and Kubelka-Munk Toolbox".
 License: GPL (>= 3)
 LazyLoad: yes
