@@ -14,7 +14,7 @@
 }
 \author{Jose Gama}
 \examples{
-MunsellHVC('7.6P 8.9/2.2')
+\dontrun{MunsellHVC('7.6P 8.9/2.2')}
 }
 \keyword{datasets}
 

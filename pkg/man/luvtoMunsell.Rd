@@ -25,7 +25,7 @@ The Munsell and Kubelka-Munk Toolbox
 }
 \author{Jose Gama}
 \examples{
-luvtoMunsell(c(0.310897, 0.306510, 74.613450))
+\dontrun{luvtoMunsell(c(0.310897, 0.306510, 74.613450))}
 }
 \keyword{datasets}
 
