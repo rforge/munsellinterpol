@@ -315,7 +315,7 @@ rCurTemp <- hypot((xCurTemp-xcenter), (yCurTemp-ycenter))
    ChromDiagHueAngleDiffs <- ChromDiagHueAngleDiffs[Iord]
    # The extrapolation option will be used if there is not sufficient data
    # for interpolation
-   NewChromDiagHueAngleDiff  <- (stats::approx(thetaDiffsVecSort, ChromDiagHueAngleDiffs, 0, 'linear'))$y %% 360
+   NewChromDiagHueAngleDiff  <- (approx(thetaDiffsVecSort, ChromDiagHueAngleDiffs, 0, 'linear'))$y %% 360
    
    NewChromDiagHueAngle      <- (CurrentChromDiagHueAngle + NewChromDiagHueAngleDiff) %% 360
 
@@ -437,7 +437,7 @@ rCurTemp <- hypot((xCur-xcenter), (yCurTemp-ycenter))
    rTempSort <- sort(rTempValues)
    Iord <- order(rTempValues)
    TempMunsellChromasSort = TempMunsellChromas[Iord]
-   NewMunsellChroma       = stats::approx(rTempSort, TempMunsellChromasSort, rInput)$y
+   NewMunsellChroma       = approx(rTempSort, TempMunsellChromasSort, rInput)$y
  
    # Adjust the current Munsell specification, by using the new chroma
    CurrentCLVec                = cbind(CurrentCLHueNumber, MunsellValue, NewMunsellChroma, CurrentCLHueLetterIndex)
@@ -725,7 +725,7 @@ else { if (habDegrees <= 324) HueLetterCode <- 9 else HueLetterCode <- 8
 }
 # Each letter code is prefixed by a number greater than 0, and less than
 # or equal to 10, that further specifies the hue.
-HueNumber <- stats::approx(c(0, 36), c(0, 10), habDegrees %% 36)$y
+HueNumber <- approx(c(0, 36), c(0, 10), habDegrees %% 36)$y
 if (HueNumber == 0) HueNumber = 10
 # Munsell value can be approximated very accurately with a simple division by 10
 Value         = L/10
@@ -800,8 +800,8 @@ if (ValuePlus <= 9) { # Handle values between 9 and 10 separately
    LuminanceFactor10 = FactorList$ASTMD153508
    FactorList        = MunsellValueToLuminanceFactor(Value)
    LuminanceFactorV  = FactorList$ASTMD153508
-   MaxCWchroma  = stats::approx(c(LuminanceFactor9, LuminanceFactor10), c(MALimitVMCW, 0),  LuminanceFactorV)$y
-   MaxCCWchroma = stats::approx(c(LuminanceFactor9, LuminanceFactor10), c(MALimitVMCCW, 0), LuminanceFactorV)$y
+   MaxCWchroma  = approx(c(LuminanceFactor9, LuminanceFactor10), c(MALimitVMCW, 0),  LuminanceFactorV)$y
+   MaxCCWchroma = approx(c(LuminanceFactor9, LuminanceFactor10), c(MALimitVMCCW, 0), LuminanceFactorV)$y
    MaxChroma    = min(MaxCWchroma, MaxCCWchroma)
 }
 # Set success code and return
@@ -820,7 +820,7 @@ AllLumFaccs = c(0.0000, 0.1201, 0.2370, 0.3521, 0.4666, 0.5818, 0.6990, 0.8193, 
 33.6590,34.9165,36.2021,37.5161,38.8589,40.2307,41.6319,43.0628,44.5238,46.0153,47.5377,49.0914,50.6769,
 52.2946,53.9451,55.6289,57.3466,59.0986,60.8858,62.7086,64.5678,66.4641,68.3982,70.3710,72.3831,74.4355,
 76.5291,78.6647,80.8434,83.0661,85.3339,87.6479,90.0092,92.4190,94.8784,97.3889,99.9516,102.5680)
-NewhallMunsellValue = stats::approx(AllLumFaccs, AllMunsVals, LumFac)$y
+NewhallMunsellValue = approx(AllLumFaccs, AllMunsVals, LumFac)$y
 # Calculate lightness (L*) from CIELAB model ([Fairchild2005, Sect. 10.3]),
 # and divide by 10 to get the Munsell value.
 LumFacAsFrac = LumFac/100
@@ -893,14 +893,14 @@ AllASTMLuminanceFactors <- c(0.000000,0.023740,0.047310,0.070723,0.093989,0.1171
 88.689875,89.159745,89.631535,90.105252,90.580908,91.058511,91.538072,92.019601,
 92.503107,92.988601,93.476093,93.965592,94.457109,94.950655,95.446239,95.943873,
 96.443567,96.945331,97.449176,97.955113,98.463153,98.973307,99.485586,100.000000)
-ASTMTableLookupMunsellValue = stats::approx(AllASTMLuminanceFactors, AllMunsVals, LumFac)$y
+ASTMTableLookupMunsellValue = approx(AllASTMLuminanceFactors, AllMunsVals, LumFac)$y
 list(OriginalLuminanceFactor = LumFac, Newhall1943 = NewhallMunsellValue, CIELAB = CIELABMunsellValue, 
 McCamy1992 = McCamyMunsellValue, ASTMTableLookup = ASTMTableLookupMunsellValue)
 }
 
 ChromDiagHueAngleToMunsellHue <- function(ChromDiagHueAngle){
 # Munsell hue as a single number
-SingleHueNumber = stats::approx(c(0,45,70,135,160,225,255,315,360), c(0,2,3,4,5,6,8,9,10), ChromDiagHueAngle)$y
+SingleHueNumber = approx(c(0,45,70,135,160,225,255,315,360), c(0,2,3,4,5,6,8,9,10), ChromDiagHueAngle)$y
 # Now the single hue number is converted back to a Munsell hue specification.
 if (SingleHueNumber <= 0.5) HueLetterCode = 7
 else { if (SingleHueNumber <= 1.5) HueLetterCode = 6
@@ -1170,16 +1170,16 @@ Status.ind <- tmp$Status.ind
 if (Status.ind != 1) return(list(Status.ind = 4)) #Unsuccessful call; return with error message
 # Perform interpolation as indicated
 if (InterpStyle.Linear == TRUE) { # Use linear interpolation
-   x = stats::approx(c(LowerTempHueAngle,UpperTempHueAngle), c(xMinus, xPlus), TempHueAngle)$y
-   y = stats::approx(c(LowerTempHueAngle,UpperTempHueAngle), c(yMinus, yPlus), TempHueAngle)$y
+   x = approx(c(LowerTempHueAngle,UpperTempHueAngle), c(xMinus, xPlus), TempHueAngle)$y
+   y = approx(c(LowerTempHueAngle,UpperTempHueAngle), c(yMinus, yPlus), TempHueAngle)$y
    } else { if (InterpStyle.Radial == TRUE) { # Use radial interpolation
    # Interpolate radially along the chroma ovoid. For example, if the input colour is 4B6/7, then 
    # the two bounding points on this ovoid are 2.5B6/6 and 5B6/6.  The new point on the
    # ovoid will have hue angle 60% of the way from the hue angle of 2.5B, to the
    # hue angle at 5B.  The R value of the new point will be between the R values for 2.5B6/6
    # and 5B6/6, in a 60/40 ratio.  
-   InterpolatedTheta <- stats::approx(c(LowerTempHueAngle,UpperTempHueAngle), c(THMinus, THPlus), TempHueAngle)$y
-   InterpolatedR     <- stats::approx(c(LowerTempHueAngle,UpperTempHueAngle), c(RMinus,  RPlus),  TempHueAngle)$y
+   InterpolatedTheta <- approx(c(LowerTempHueAngle,UpperTempHueAngle), c(THMinus, THPlus), TempHueAngle)$y
+   InterpolatedR     <- approx(c(LowerTempHueAngle,UpperTempHueAngle), c(RMinus,  RPlus),  TempHueAngle)$y
    # Find xy chromaticity coordinates for the new point on the chroma ovoid
    x  <- InterpolatedR * cos(InterpolatedTheta/180*pi) + xGrey
    y  <- InterpolatedR * sin(InterpolatedTheta/180*pi) + yGrey
@@ -1290,8 +1290,8 @@ if (MunsellChromaMinus == MunsellChromaPlus){ # Two bounding points are the same
    x <- xMinus # xMinus and xPlus are the same, as are yMinus and yPlus
    y <- yMinus
 } else { # Two bounding points are different
-   x <- stats::approx(c(MunsellChromaMinus, MunsellChromaPlus), c(xMinus, xPlus), MunsellChroma)$y
-   y <- stats::approx(c(MunsellChromaMinus, MunsellChromaPlus), c(yMinus, yPlus), MunsellChroma)$y
+   x <- approx(c(MunsellChromaMinus, MunsellChromaPlus), c(xMinus, xPlus), MunsellChroma)$y
+   y <- approx(c(MunsellChromaMinus, MunsellChromaPlus), c(yMinus, yPlus), MunsellChroma)$y
 }
 # Set successful status return code and return
 list(x=x, y=y, Status.ind=1)
@@ -1333,7 +1333,7 @@ list(ClockwiseHue=ClockwiseHue, CtrClockwiseHue=CtrClockwiseHue)
 MunsellHueToChromDiagHueAngle <- function(HueNumber,HueLetterCode)
 {
 SingleHueNumber <- ((((17-HueLetterCode) %% 10) + (HueNumber/10) - 0.5) %% 10)
-ChromDiagHueAngle <- stats::approx(c(0,2,3,4,5,6,8,9,10), c(0,45,70,135,160,225,255,315,360), SingleHueNumber)$y
+ChromDiagHueAngle <- approx(c(0,2,3,4,5,6,8,9,10), c(0,45,70,135,160,225,255,315,360), SingleHueNumber)$y
 ChromDiagHueAngle
 }
 
@@ -1589,13 +1589,13 @@ if (ValueMinus == ValuePlus){
    LuminanceFactors <- MunsellValueToLuminanceFactor(ValuePlus)	
    YPlus            <- LuminanceFactors$ASTMD153508
    if (InterpolateByLuminanceFactor) { # Interpolate over luminance factor
-   x <- stats::approx(c(YMinus, YPlus), c(xminus, xplus), Y)$y
-   y <- stats::approx(c(YMinus, YPlus), c(yminus, yplus), Y)$y
+   x <- approx(c(YMinus, YPlus), c(xminus, xplus), Y)$y
+   y <- approx(c(YMinus, YPlus), c(yminus, yplus), Y)$y
    } else {
    # The following option can be used to test interpolating over value vs interpolating over luminance factor
    # Interpolate over value instead of over luminance factor
-      x <- stats::approx(c(ValueMinus, ValuePlus), c(xminus, xplus), V)$y
-      y <- stats::approx(c(ValueMinus, ValuePlus), c(yminus, yplus), V)$y
+      x <- approx(c(ValueMinus, ValuePlus), c(xminus, xplus), V)$y
+      y <- approx(c(ValueMinus, ValuePlus), c(yminus, yplus), V)$y
    }
 }
 # Set successful status return code and return
