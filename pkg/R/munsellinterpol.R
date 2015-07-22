@@ -1194,6 +1194,8 @@ if (InterpStyle.Linear == TRUE) { # Use linear interpolation
 MunsellToxyYfromExtrapolatedRenotation<-function(ColorLabColour){
 HueListLetters <- c('R', 'YR', 'Y', 'GY', 'G', 'BG', 'B', 'PB', 'P', 'RP')
 ColorLabHueLetters <- c('B', 'BG', 'G', 'GY', 'Y', 'YR', 'R', 'RP', 'P', 'PB')
+data("MunsellRenotation", envir = environment())
+MunsellRenotation<-get("MunsellRenotation", envir  = environment())
 # A one-element colour vector is achromatic grey
 if (length(ColorLabColour) == 1){
 V  <- ColorLabColour[1]
@@ -1212,8 +1214,8 @@ if (C != 0)   if (((C %% 2) != 0) || (C < 2) || (C > 38)){ # Input chroma is not
       return(list(Status.ind = 5))
    }
 if (length(ColorLabColour) == 1){
-data("MunsellRenotation", envir = environment())
-MunsellRenotation<-get("MunsellRenotation", envir  = environment())
+
+
   w <- which(MunsellRenotation[["H"]]=='N' & MunsellRenotation[["V"]]==V & MunsellRenotation[["C"]]==C)
   if (length(w)==0) return(list(Status.ind = 2))
   m<-MunsellRenotation[w,] 
