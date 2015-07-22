@@ -20,9 +20,7 @@ Java Tutorial
 }
 \author{Jose Gama}
 \examples{
-\dontrun{
 hypot(0.310897, 0.306510)
-}
 }
 \keyword{datasets}
 

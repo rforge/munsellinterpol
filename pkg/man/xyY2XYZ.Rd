@@ -21,8 +21,6 @@ EasyRGB color search engine
 \url{http://www.easyrgb.com/}
 }
 \author{Jose Gama}
-\examples{
 xyY2XYZ(c(0.310897, 0.306510, 74.613450))
-}
 \keyword{datasets}
 

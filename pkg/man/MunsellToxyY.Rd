@@ -28,7 +28,7 @@ The Munsell and Kubelka-Munk Toolbox
 }
 \author{Jose Gama}
 \examples{
-\dontrun{MunsellToxyY('7.6P 8.9/2.2')}
+MunsellToxyY('7.6P 8.9/2.2')
 }
 \keyword{datasets}
 

@@ -28,7 +28,7 @@ The Munsell and Kubelka-Munk Toolbox
 }
 \author{Jose Gama}
 \examples{
-\dontrun{MunsellToLab('7.6P 8.9/2.2')}
+MunsellToLab('7.6P 8.9/2.2')
 }
 \keyword{datasets}
 

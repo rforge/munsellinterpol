@@ -38,10 +38,8 @@ Color Science: Concepts and Methods, Quantitative Data and Formulae, 2nd edition
 }
 \author{Jose Gama}
 \examples{
-\dontrun{
 data(OptimalColoursForIlluminantC)
 OptimalColoursForIlluminantC
-}
 }
 \keyword{datasets}
 

@@ -23,7 +23,7 @@ EasyRGB color search engine
 }
 \author{Jose Gama}
 \examples{
-\dontrun{luv2xyz(c(0.310897, 0.306510, 74.613450))}
+luv2xyz(c(0.310897, 0.306510, 74.613450))
 }
 \keyword{datasets}
 

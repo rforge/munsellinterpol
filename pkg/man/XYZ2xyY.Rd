@@ -22,9 +22,7 @@ EasyRGB color search engine
 }
 \author{Jose Gama}
 \examples{
-\dontrun{
 XYZ2xyY(c(0.310897, 0.306510, 0.3))
-}
 }
 \keyword{datasets}
 

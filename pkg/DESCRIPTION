@@ -1,6 +1,6 @@
 Package: munsellinterpol
 Type: Package
-Title: Interpolation of Munsell Renotation Data to Convert any Hue and Chroma Values to CIE xyY, CIE XYZ, sRGB, CIE Lab or CIE Luv
+Title: Interpolate Munsell Renotation Data from Hue/Chroma to CIE/sRGB
 Version: 1.0.2
 Encoding: UTF-8
 Authors@R: c(person(given = "Jose", family = "Gama", role = c("aut","cre","trl"),email = "rxprtgama@gmail.com"),

@@ -23,7 +23,7 @@ EasyRGB color search engine
 }
 \author{Jose Gama}
 \examples{
-\dontrun{lab2xyz(c(17,12,12))}
+lab2xyz(c(17,12,12))
 }
 \keyword{datasets}
 

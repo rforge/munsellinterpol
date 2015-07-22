@@ -27,7 +27,7 @@ Journal of the Optical Society of America, Vol. 33, Issue 7, pp. 385-418.
 \author{Jose Gama}
 \examples{
 data(MunsellRenotation)
-\dontrun{MunsellRenotation}
+MunsellRenotation
 }
 \keyword{datasets}
 
