@@ -259,7 +259,7 @@ thetaCur <- ((180/pi) * thetaCur) %% 360 # Convert to degrees
    # at the value thetaDiff = 0.
    ctr = 0
    AttemptExtrapolation = FALSE
-   while (sign(min(thetaDiffsVec)) == sign(max(thetaDiffsVec))  && AttemptExtrapolation == FALSE){
+   while ((sign(min(thetaDiffsVec)) == sign(max(thetaDiffsVec)))  && (AttemptExtrapolation == FALSE)){
       ctr = ctr + 1
 
 	  if (ctr > 10) return(list(Status.ind = 3))# Too many attempts.  Return with error message
@@ -281,7 +281,7 @@ thetaCur <- ((180/pi) * thetaCur) %% 360 # Convert to degrees
   
       tmp <- MunsellToxyY(TempCLVec)
       xCurTemp <- tmp$x
-      yCurTemp <- tmp$x
+      yCurTemp <- tmp$y
       YCurTemp <- tmp$Y
       Status.ind <- tmp$Status.ind
       
@@ -794,12 +794,18 @@ if (ValuePlus <= 9) { # Handle values between 9 and 10 separately
    # can be evaluated.
    MaxChroma = min(MALimitVMCW, MALimitVMCCW, MALimitVPCW, MALimitVPCCW)
 } else { # Input value is between 9 and 10; use geometric calculation
-   FactorList        = MunsellValueToLuminanceFactor(9)	
-   LuminanceFactor9  = FactorList$ASTMD153508
-   FactorList        = MunsellValueToLuminanceFactor(10)
-   LuminanceFactor10 = FactorList$ASTMD153508
-   FactorList        = MunsellValueToLuminanceFactor(Value)
-   LuminanceFactorV  = FactorList$ASTMD153508
+#    FactorList        = MunsellValueToLuminanceFactor(9)	
+#    LuminanceFactor9  = FactorList$ASTMD153508
+#    FactorList        = MunsellValueToLuminanceFactor(10)
+#    LuminanceFactor10 = FactorList$ASTMD153508
+#    FactorList        = MunsellValueToLuminanceFactor(Value)
+#    LuminanceFactorV  = FactorList$ASTMD153508
+
+LuminanceFactor9        = MunsellValueToLuminanceFactorASTMD153508(9)
+LuminanceFactor10        = MunsellValueToLuminanceFactorASTMD153508(10)
+LuminanceFactorV        = MunsellValueToLuminanceFactorASTMD153508(Value)
+
+
    MaxCWchroma  = approx(c(LuminanceFactor9, LuminanceFactor10), c(MALimitVMCW, 0),  LuminanceFactorV)$y
    MaxCCWchroma = approx(c(LuminanceFactor9, LuminanceFactor10), c(MALimitVMCCW, 0), LuminanceFactorV)$y
    MaxChroma    = min(MaxCWchroma, MaxCCWchroma)
@@ -1006,6 +1012,8 @@ MunsellSpecToColorLabFormat <- function(MunsellSpecString)
 # Based on: MunsellAndKubelkaMunkToolbox by Paul Centore 
 # Remove all spaces from input Munsell string
 MunsellString <- gsub(' ','',MunsellSpecString)
+# Remove trailing /
+MunsellString <- gsub("/$",'',MunsellString)
 # Make all letters in Munsell string upper case
 MunsellString <- toupper(MunsellString)
 # Read through the Munsell string in order, extracting hue, value, and chroma
@@ -1543,6 +1551,12 @@ ASTMLuminanceFactor <- Term1 + Term2 + Term3 + Term4 + Term5
 list(OriginalMunsellValue = MunsellValue, Newhall1943 = NewhallLuminanceFactor, CIELAB = CIELABLuminanceFactor, ASTMD153508 = ASTMLuminanceFactor)
 }
 
+MunsellValueToLuminanceFactorASTMD153508 <- function(MunsellValue)
+{# Calculate luminance factor from expression in ([ASTMD1535-08, p. 4])
+# coded by Glenn Davis
+( ((((81939*MunsellValue - 2048400)*MunsellValue  + 23352000)*MunsellValue - 22533000)*MunsellValue + 119140000)*MunsellValue  ) / 1.e8
+}
+
 MunsellToxyY<-function(MunsellSpec, InterpolateByLuminanceFactor=TRUE)
 {#Convert a Munsell specification into xyY coordinates, by interpolating over the extrapolated Munsell renotation data.
 if (is.character(MunsellSpec)) ColorLabMunsellVector <- MunsellSpecToColorLabFormat(MunsellSpec) else ColorLabMunsellVector <- MunsellSpec
@@ -1557,9 +1571,11 @@ V <- as.numeric(ColorLabMunsellVector)
 C <- 0
 HueLetterCode<-getMunsellHueLetterDesignator(MunsellSpec)
 }
+
 if ((V < 1) | (V > 10)) stop('Munsell value must be within the limits of the renotation data (between 1 and 10)')
-LuminanceFactors <- MunsellValueToLuminanceFactor(V)
-Y <- LuminanceFactors$ASTMD153508  #MunsellV2Y(V)
+# LuminanceFactors <- MunsellValueToLuminanceFactor(V)
+# Y <- LuminanceFactors$ASTMD153508  #MunsellV2Y(V)
+Y <-  MunsellValueToLuminanceFactorASTMD153508(V)
 if ((abs(V - round(V)) < 0.001)){
 ValueMinus <- round(V)
 ValuePlus  <- round(V)
@@ -1586,10 +1602,14 @@ if (ValueMinus == ValuePlus){
    x <- xminus
    y <- yminus
 } else {
-   LuminanceFactors <- MunsellValueToLuminanceFactor(ValueMinus)
-   YMinus           <- LuminanceFactors$ASTMD153508
-   LuminanceFactors <- MunsellValueToLuminanceFactor(ValuePlus)	
-   YPlus            <- LuminanceFactors$ASTMD153508
+#   LuminanceFactors <- MunsellValueToLuminanceFactor(ValueMinus)
+#   YMinus           <- LuminanceFactors$ASTMD153508
+#   LuminanceFactors <- MunsellValueToLuminanceFactor(ValuePlus)	
+#   YPlus            <- LuminanceFactors$ASTMD153508
+
+YMinus           <-  MunsellValueToLuminanceFactorASTMD153508(ValueMinus)
+YPlus            <-  MunsellValueToLuminanceFactorASTMD153508(ValuePlus)
+
    if (InterpolateByLuminanceFactor) { # Interpolate over luminance factor
    x <- approx(c(YMinus, YPlus), c(xminus, xplus), Y)$y
    y <- approx(c(YMinus, YPlus), c(yminus, yplus), Y)$y
